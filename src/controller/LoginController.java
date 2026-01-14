@@ -15,12 +15,20 @@ public class LoginController {
             UserDAO userDAO = new UserDAO();
             if (userDAO.login(user, pass)) {
                 JOptionPane.showMessageDialog(view, "Login Berhasil!");
-                view.dispose();
 
-                MainView mainView = new MainView();
-                MahasiswaDAO dao = new MahasiswaDAO();
-                new MahasiswaController(mainView, dao);
-                mainView.setVisible(true);
+                try {
+                    view.dispose();
+
+                    MainView mainView = new MainView();
+                    MahasiswaDAO dao = new MahasiswaDAO();
+                    new MahasiswaController(mainView, dao);
+                    mainView.setVisible(true);
+
+                } catch (Throwable ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Gagal membuka Dashboard: " + ex.getMessage());
+                }
+
             } else {
                 JOptionPane.showMessageDialog(view, "Username/Password Salah!");
             }

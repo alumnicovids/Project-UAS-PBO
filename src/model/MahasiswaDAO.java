@@ -18,28 +18,24 @@ public class MahasiswaDAO {
         }
     }
 
-    public void update(Mahasiswa m) {
+    public void update(Mahasiswa m) throws SQLException {
         String sql = "UPDATE mahasiswa SET nama=?, tanggal_lahir=?, prodi=? WHERE nim=?";
-        try (Connection conn = Database.getConnection();
-          PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection conn = Database.getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, m.getNama());
             stmt.setDate(2, m.getTanggalLahir());
             stmt.setString(3, m.getProdi());
             stmt.setString(4, m.getNim());
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
-    public void delete(String nim) {
+    public void delete(String nim) throws SQLException {
         String sql = "DELETE FROM mahasiswa WHERE nim=?";
-        try (Connection conn = Database.getConnection();
-          PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection conn = Database.getConnection();
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, nim);
             stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
@@ -100,5 +96,24 @@ public class MahasiswaDAO {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public int getTotalMahasiswa() {
+        try (Connection conn = Database.getConnection();
+          Statement stmt = conn.createStatement();
+          ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM mahasiswa")) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (Exception e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    public String getProdiTerbanyak() {
+        String sql = "SELECT prodi, COUNT(*) as cnt FROM mahasiswa GROUP BY prodi ORDER BY cnt DESC LIMIT 1";
+        try (Connection conn = Database.getConnection();
+          Statement stmt = conn.createStatement();
+          ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) return rs.getString("prodi");
+        } catch (Exception e) { e.printStackTrace(); }
+        return "-";
     }
 }

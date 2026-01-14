@@ -1,5 +1,6 @@
 package view;
 
+import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -8,7 +9,12 @@ import java.awt.*;
 
 
 public class MainView extends JFrame {
-  public JTextField txtSearch;
+    public JButton btnMenuDashboard;
+    public JDateChooser dateChooser;
+    public JComboBox<String> cbProdi;
+    public JLabel lblTotal, lblProdiDominan;
+
+    public JTextField txtSearch;
     public CardLayout cardLayout;
     public JPanel centerPanel;
     public JPanel sidebarPanel;
@@ -53,9 +59,11 @@ public class MainView extends JFrame {
         lblTitle.setForeground(colorAccent);
         sidebarPanel.add(lblTitle);
 
+        btnMenuDashboard = createSidebarButton("Dashboard");
         btnMenuInsert = createSidebarButton("Input Data");
         btnMenuView = createSidebarButton("Data Mahasiswa");
 
+        sidebarPanel.add(btnMenuDashboard);
         sidebarPanel.add(btnMenuInsert);
         sidebarPanel.add(btnMenuView);
     }
@@ -65,8 +73,32 @@ public class MainView extends JFrame {
         centerPanel = new JPanel(cardLayout);
         centerPanel.setBackground(colorBg);
 
+        centerPanel.add(createDashboardPanel(), "DASHBOARD");
         centerPanel.add(createInsertPanel(), "INSERT");
         centerPanel.add(createViewPanel(), "VIEW");
+    }
+
+    private JPanel createDashboardPanel() {
+        JPanel panel = new JPanel(new GridLayout(1, 2, 20, 0));
+        panel.setBackground(new Color(33, 33, 33));
+        panel.setBorder(new EmptyBorder(50, 50, 50, 50));
+
+        lblTotal = createStatCard("Total Mahasiswa", "0");
+        lblProdiDominan = createStatCard("Prodi Terbanyak", "-");
+
+        panel.add(lblTotal);
+        panel.add(lblProdiDominan);
+        return panel;
+    }
+
+    private JLabel createStatCard(String title, String value) {
+        JLabel lbl = new JLabel("<html><center>" + title + "<br/><br/><span style='font-size:24px'>" + value + "</span></center></html>", SwingConstants.CENTER);
+        lbl.setOpaque(true);
+        lbl.setBackground(new Color(45, 45, 45));
+        lbl.setForeground(Color.WHITE);
+        lbl.setFont(new Font("SansSerif", Font.BOLD, 16));
+        lbl.setBorder(BorderFactory.createLineBorder(Color.decode("#219e3d"), 2));
+        return lbl;
     }
 
     private JPanel createInsertPanel() {
@@ -83,11 +115,17 @@ public class MainView extends JFrame {
         addLabel(panel, "Nama Lengkap", 0, 1, gbc);
         txtNama = addRoundedTextField(panel, 1, 1, gbc);
 
-        addLabel(panel, "Tanggal Lahir (YYYY-MM-DD)", 0, 2, gbc);
-        txtTanggalLahir = addRoundedTextField(panel, 1, 2, gbc);
+        addLabel(panel, "Tanggal Lahir", 0, 2, gbc);
+        dateChooser = new JDateChooser();
+        dateChooser.setDateFormatString("yyyy-MM-dd");
+        gbc.gridx = 1; gbc.gridy = 2;
+        panel.add(dateChooser, gbc);
 
         addLabel(panel, "Program Studi", 0, 3, gbc);
-        txtProdi = addRoundedTextField(panel, 1, 3, gbc);
+        String[] prodiList = {"Sistem Komputer", "Sistem Informasi", "Teknologi Informasi", "Bisnis Digital", "Manajemen Informasi"};
+        cbProdi = new JComboBox<>(prodiList);
+        gbc.gridx = 1; gbc.gridy = 3;
+        panel.add(cbProdi, gbc);
 
         btnSave = createGradientButton("Simpan Data");
         gbc.gridx = 1; gbc.gridy = 4;
@@ -105,18 +143,16 @@ public class MainView extends JFrame {
 
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchPanel.setBackground(new Color(33, 33, 33));
-
         JLabel lblSearch = new JLabel("Cari Data:");
         lblSearch.setForeground(Color.WHITE);
-
         txtSearch = new JTextField(20);
-
         searchPanel.add(lblSearch);
         searchPanel.add(txtSearch);
         panel.add(searchPanel, BorderLayout.NORTH);
 
         String[] columns = {"NIM", "Nama", "Tgl Lahir", "Prodi"};
         tableModel = new DefaultTableModel(columns, 0);
+
         table = new JTable(tableModel) {
             @Override
             public Component prepareRenderer(javax.swing.table.TableCellRenderer renderer, int row, int column) {
@@ -132,7 +168,9 @@ public class MainView extends JFrame {
             }
         };
 
+        table.setAutoCreateRowSorter(true);
         styleTable(table);
+
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.getViewport().setBackground(new Color(33, 33, 33));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -140,10 +178,8 @@ public class MainView extends JFrame {
 
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnPanel.setBackground(new Color(33, 33, 33));
-
         btnEdit = createGradientButton("Edit Data");
         btnDelete = createGradientButton("Hapus Data");
-
         btnPanel.add(btnEdit);
         btnPanel.add(btnDelete);
         panel.add(btnPanel, BorderLayout.SOUTH);
