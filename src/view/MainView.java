@@ -7,7 +7,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-
 public class MainView extends JFrame {
   public JButton btnMenuDashboard;
   public JDateChooser dateChooser;
@@ -47,6 +46,16 @@ public class MainView extends JFrame {
     add(centerPanel, BorderLayout.CENTER);
   }
 
+  private void initCenterPanel() {
+    cardLayout = new CardLayout();
+    centerPanel = new JPanel(cardLayout);
+    centerPanel.setBackground(colorBg);
+
+    centerPanel.add(createDashboardPanel(), "DASHBOARD");
+    centerPanel.add(createInsertPanel(), "INSERT");
+    centerPanel.add(createViewPanel(), "VIEW");
+  }
+
   private void initSidebar() {
     sidebarPanel = new JPanel();
     sidebarPanel.setPreferredSize(new Dimension(220, getHeight()));
@@ -68,14 +77,16 @@ public class MainView extends JFrame {
     sidebarPanel.add(btnMenuView);
   }
 
-  private void initCenterPanel() {
-    cardLayout = new CardLayout();
-    centerPanel = new JPanel(cardLayout);
-    centerPanel.setBackground(colorBg);
-
-    centerPanel.add(createDashboardPanel(), "DASHBOARD");
-    centerPanel.add(createInsertPanel(), "INSERT");
-    centerPanel.add(createViewPanel(), "VIEW");
+  private JButton createSidebarButton(String text) {
+    JButton btn = new JButton(text);
+    btn.setFont(new Font("SansSerif", Font.PLAIN, 14));
+    btn.setForeground(Color.WHITE);
+    btn.setBackground(colorSidebar);
+    btn.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
+    btn.setFocusPainted(false);
+    btn.setContentAreaFilled(false);
+    btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    return btn;
   }
 
   private JPanel createDashboardPanel() {
@@ -96,15 +107,15 @@ public class MainView extends JFrame {
 
   private JPanel createGradientCard(String title, JLabel valueLabel, Color colorStart, Color colorEnd) {
     JPanel card = new JPanel(new BorderLayout()) {
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            GradientPaint gp = new GradientPaint(0, 0, colorStart, getWidth(), getHeight(), colorEnd);
-            g2.setPaint(gp);
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 25, 25);
-            super.paintComponent(g);
-        }
+      @Override
+      protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        GradientPaint gp = new GradientPaint(0, 0, colorStart, getWidth(), getHeight(), colorEnd);
+        g2.setPaint(gp);
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), 25, 25);
+        super.paintComponent(g);
+      }
     };
     card.setOpaque(false);
     card.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -220,8 +231,8 @@ public class MainView extends JFrame {
     tf.setForeground(Color.WHITE);
     tf.setCaretColor(colorAccent);
     tf.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createMatteBorder(0, 0, 2, 0, Color.DARK_GRAY),
-        BorderFactory.createEmptyBorder(5, 0, 10, 0)
+      BorderFactory.createMatteBorder(0, 0, 2, 0, Color.DARK_GRAY),
+      BorderFactory.createEmptyBorder(5, 0, 10, 0)
     ));
     tf.setFont(new Font("SansSerif", Font.PLAIN, 16));
     gbc.gridy = y;
@@ -280,16 +291,18 @@ public class MainView extends JFrame {
     return panel;
   }
 
-  private JButton createSidebarButton(String text) {
-    JButton btn = new JButton(text);
-    btn.setFont(new Font("SansSerif", Font.PLAIN, 14));
-    btn.setForeground(Color.WHITE);
-    btn.setBackground(colorSidebar);
-    btn.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
-    btn.setFocusPainted(false);
-    btn.setContentAreaFilled(false);
-    btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    return btn;
+  private void styleTable(JTable t) {
+    t.setRowHeight(30);
+    t.setShowVerticalLines(false);
+    t.setIntercellSpacing(new Dimension(0, 0));
+    t.getTableHeader().setBackground(colorSidebar);
+    t.getTableHeader().setForeground(colorAccent);
+    t.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
+    t.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, colorAccent));
+
+    DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+    centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+    t.setDefaultRenderer(String.class, centerRenderer);
   }
 
   private JButton createGradientButton(String text) {
@@ -311,19 +324,5 @@ public class MainView extends JFrame {
     btn.setBorder(new EmptyBorder(10, 20, 10, 20));
     btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
     return btn;
-  }
-
-  private void styleTable(JTable t) {
-    t.setRowHeight(30);
-    t.setShowVerticalLines(false);
-    t.setIntercellSpacing(new Dimension(0, 0));
-    t.getTableHeader().setBackground(colorSidebar);
-    t.getTableHeader().setForeground(colorAccent);
-    t.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
-    t.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, colorAccent));
-
-    DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-    centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-    t.setDefaultRenderer(String.class, centerRenderer);
   }
 }

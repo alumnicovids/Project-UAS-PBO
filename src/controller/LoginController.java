@@ -14,7 +14,7 @@ public class LoginController {
 
       UserDAO userDAO = new UserDAO();
       if (userDAO.login(user, pass)) {
-        JOptionPane.showMessageDialog(view, "        Login Berhasil!\nWelcome Back Admin....");
+        JOptionPane.showMessageDialog(view, "\t\tLogin Berhasil!\nWelcome Back Admin....");
         try {
           view.dispose();
           MainView mainView = new MainView();

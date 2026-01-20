@@ -51,11 +51,6 @@ public class MahasiswaController {
     highlightMenu(view.btnMenuDashboard, view.btnMenuView);
   }
 
-  private void highlightMenu(JButton active, JButton inactive) {
-    active.setForeground(java.awt.Color.decode("#219e3d"));
-    inactive.setForeground(java.awt.Color.WHITE);
-  }
-
   private void saveMahasiswa() {
     try {
       String nim = view.txtNim.getText().trim();
@@ -83,34 +78,6 @@ public class MahasiswaController {
     } catch (Exception e) {
       JOptionPane.showMessageDialog(view, "Error: " + e.getMessage());
       e.printStackTrace();
-    }
-  }
-
-  private void refreshTable() {
-      view.tableModel.setRowCount(0);
-      List<Mahasiswa> list = dao.getAll();
-      for (Mahasiswa m : list) {
-          view.tableModel.addRow(new Object[]{m.getNim(), m.getNama(), m.getTanggalLahir(), m.getProdi()});
-      }
-  }
-
-  private void deleteMahasiswa() {
-    int row = view.table.getSelectedRow();
-    if (row != -1) {
-      row = view.table.convertRowIndexToModel(row);
-      String nim = (String) view.tableModel.getValueAt(row, 0);
-
-      int confirm = JOptionPane.showConfirmDialog(view, "Hapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
-      if (confirm == JOptionPane.YES_OPTION) {
-        try {
-          dao.delete(nim);
-          refreshTable();
-        } catch (Exception e) {
-          JOptionPane.showMessageDialog(view, "Gagal Hapus: " + e.getMessage());
-        }
-      }
-    } else {
-      JOptionPane.showMessageDialog(view, "Pilih baris yang akan dihapus!");
     }
   }
 
@@ -152,10 +119,38 @@ public class MahasiswaController {
     }
   }
 
+  private void deleteMahasiswa() {
+    int row = view.table.getSelectedRow();
+    if (row != -1) {
+      row = view.table.convertRowIndexToModel(row);
+      String nim = (String) view.tableModel.getValueAt(row, 0);
+
+      int confirm = JOptionPane.showConfirmDialog(view, "Hapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+      if (confirm == JOptionPane.YES_OPTION) {
+        try {
+          dao.delete(nim);
+          refreshTable();
+        } catch (Exception e) {
+          JOptionPane.showMessageDialog(view, "Gagal Hapus: " + e.getMessage());
+        }
+      }
+    } else {
+      JOptionPane.showMessageDialog(view, "Pilih baris yang akan dihapus!");
+    }
+  }
+
   private void searchData() {
     view.tableModel.setRowCount(0);
     String keyword = view.txtSearch.getText();
     List<Mahasiswa> list = dao.search(keyword);
+    for (Mahasiswa m : list) {
+      view.tableModel.addRow(new Object[]{m.getNim(), m.getNama(), m.getTanggalLahir(), m.getProdi()});
+    }
+  }
+
+  private void refreshTable() {
+    view.tableModel.setRowCount(0);
+    List<Mahasiswa> list = dao.getAll();
     for (Mahasiswa m : list) {
       view.tableModel.addRow(new Object[]{m.getNim(), m.getNama(), m.getTanggalLahir(), m.getProdi()});
     }
@@ -166,5 +161,10 @@ public class MahasiswaController {
     view.txtNama.setText("");
     view.dateChooser.setDate(null);
     view.cbProdi.setSelectedIndex(0);
+  }
+
+  private void highlightMenu(JButton active, JButton inactive) {
+    active.setForeground(java.awt.Color.decode("#219e3d"));
+    inactive.setForeground(java.awt.Color.WHITE);
   }
 }
